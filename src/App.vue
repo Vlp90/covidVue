@@ -1,28 +1,163 @@
 <template>
-  <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
-  </div>
+<div class="app">
+      <div class="app__left">
+        <div class="app__header">
+          <h1>COVID-19 TRACKER</h1>
+         <h2>Form control</h2>
+        </div>
+
+        <div class="app__stats">
+         <InfoBox />
+        </div>
+
+        <div class="app__map">
+          <Map casesType={casesType} countries={mapCountries} center={mapCenter} zoom={mapZoom} />
+        </div>
+      </div>
+
+<div class="app__rightContainer">
+         <!-- <Card className="app__right">
+        <CardContent> -->
+          <h3 className='app__rightTitle'>Last 24h Cases by Country</h3>
+          <!-- {/* Table */} -->
+          <Table countries={tableData} />
+          <h3 className='app__graphTitle'>Worldwide new casesType</h3>
+          <LineGraph class='app__graph' casesType={casesType} />
+        <!-- </CardContent>
+      </Card>  -->
+</div>
+    </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import LineGraph from './components/LineGraphs'
+import InfoBox from './components/InfoBox'
+import Table from './components/Table'
+import Map from './components/Map'
 
 export default {
   name: 'App',
   components: {
-    HelloWorld
+    LineGraph, InfoBox, Table, Map
   }
 }
 </script>
 
 <style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
+
+
+* {
+  margin: 0;
+  padding: 0;
+}
+
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
+  background-color: #f5f6fa;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+
+.app {
+  display: flex;
+  justify-content: space-evenly;
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+@media (max-width: 900px) {
+  .app {
+    flex-direction: column;
+  }
+}
+
+.app__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  /* width: 60vw;
+  margin-top: 30px;
+  margin-left: 20px; */
+  margin-bottom: 20px;
+}
+
+.app__header > h1, .app__rightTitle, .app__graphTitle {
+  color: gray;
+}
+
+.app__stats {
+display: flex;
+/* width: 500px; */
+justify-content: space-between;
+}
+
+.app__dropdown {
+  background-color: white;
+}
+
+.app__left {
+  flex: 0.9;
+  /* height: 95vh; */
+  height: 884px;
+}
+
+.app__right {
+  display: flex;
+  flex-direction: column;
+  /* height: 870px; */
+}
+
+.app__right .MuiCardContent-root {
+  display: flex;
+  flex-grow: 1;
+  flex-direction: column;
+}
+
+.app__graph {
+  flex-grow: 1;
+  height:319px
+}
+
+
+.app__graphTitle {
+  margin-bottom: 20px;
+}
+
+.app__map {
+padding-bottom: 15px ;
+}
+
+.app__rightContainer {
+  /* height: 100%; */
+  height: 884px;
+}
+
+@media (max-width: 500px) {
+  .app__stats {
+    display: flex;
+  /* flex-grow: 1; */
+  flex-direction: column;
+
+  }
+}
+
+
+
+@media (max-width: 900px) {
+  .app__rightContainer {
+    /* margin-top: 400px; */
+
+  }
 }
 </style>
