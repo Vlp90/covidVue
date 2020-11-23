@@ -31,6 +31,8 @@
       <Table country="Chine" totalCase="15000" />
       <h3 class="app__graphTitle">Worldwide new casesType</h3>
       <LineGraph class="app__graph" casesType="{casesType}" />
+       
+
       <!-- </CardContent>
       </Card>  -->
     </el-card>
@@ -52,6 +54,20 @@ export default {
     Map,
     FormControl,
   },
+  methods: {
+    fillData () {
+        this.dataPoints = {
+          labels: ['January' + this.getRandomInt(), 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+          datasets: [
+            {
+              label: 'Data One',
+              backgroundColor: '#f87979',
+              data: [this.getRandomInt(), this.getRandomInt(), this.getRandomInt(), this.getRandomInt(), this.getRandomInt(), this.getRandomInt(), this.getRandomInt(), this.getRandomInt(), this.getRandomInt(), this.getRandomInt(), this.getRandomInt(), this.getRandomInt()]
+            }
+          ]
+        }
+      }
+  }
 };
 </script>
 
