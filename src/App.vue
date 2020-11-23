@@ -1,5 +1,6 @@
 <template>
   <div class="app">
+
     <div class="app__left">
       <div class="app__header">
         <h1>COVID-19 TRACKER</h1>
@@ -13,12 +14,7 @@
       </div>
 
       <el-card class="app__map">
-        <Map
-          casesType="{casesType}"
-          countries="{mapCountries}"
-          center="{mapCenter}"
-          zoom="{mapZoom}"
-        />
+        <Map />
       </el-card>
     </div>
 
@@ -36,6 +32,7 @@
       <!-- </CardContent>
       </Card>  -->
     </el-card>
+    
   </div>
 </template>
 
@@ -148,6 +145,7 @@ code {
 .app__map {
   padding-bottom: 15px;
   margin: 15px 0;
+  /* width: 100%; */
 }
 .app__rightContainer {
   /* height: 100%; */
@@ -160,9 +158,9 @@ code {
     flex-direction: column;
   }
 }
-@media (max-width: 900px) {
+/* @media (max-width: 900px) {
   .app__rightContainer {
-    /* margin-top: 400px; */
+    margin-top: 400px;
   }
-}
+} */
 </style>

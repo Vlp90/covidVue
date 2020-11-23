@@ -11,8 +11,12 @@
     "chart.js": "^2.9.4",
     "core-js": "^3.6.5",
     "element-ui": "^2.14.1",
+    "leaflet": "^1.7.1",
+    "mapbox-gl": "^1.13.0",
     "vue": "^2.6.11",
-    "vue-chartjs": "^3.5.1"
+    "vue-chartjs": "^3.5.1",
+    "vue2-google-maps": "^0.10.7",
+    "vue2-leaflet": "^2.6.0"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.5.0",
