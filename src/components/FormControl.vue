@@ -1,24 +1,18 @@
 <template>
-<div>
-<h2>Form Control</h2>
-    <Select v-model="value" placeholder="Select">
-    <Option
+<div>  
+  <el-select v-model="value" placeholder="Select">
+    <el-option
       v-for="item in options"
       :key="item.value"
       :label="item.label"
       :value="item.value">
-    </Option>
-  </Select>
+    </el-option>
+  </el-select>
+
 </div>
 </template>
 
 <script>
-
-import { Select, Option } from 'element-ui';
-import Vue from 'vue';
-Vue.use(Select)
-Vue.use(Option)
-
 
 
   export default {
@@ -40,10 +34,15 @@ Vue.use(Option)
           value: 'Option5',
           label: 'Option5'
         }],
-        value: ''
+        value: 'Worlwide'
       }
+    },
+    methods: {
+    
     }
   }
+
+
 </script>
 
 <style>
