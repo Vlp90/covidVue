@@ -3,7 +3,7 @@
       <div class="app__left">
         <div class="app__header">
           <h1>COVID-19 TRACKER</h1>
-         <h2>Form control</h2>
+   <FormControl/>
         </div>
 
         <div class="app__stats">
@@ -34,11 +34,12 @@ import LineGraph from './components/LineGraphs'
 import InfoBox from './components/InfoBox'
 import Table from './components/Table'
 import Map from './components/Map'
+import FormControl from './components/FormControl'
 
 export default {
   name: 'App',
   components: {
-    LineGraph, InfoBox, Table, Map
+    LineGraph, InfoBox, Table, Map, FormControl
   }
 }
 </script>
