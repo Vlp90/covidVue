@@ -12,27 +12,28 @@
         <InfoBox title="Deaths" evolution="12" total="10" />
       </div>
 
-      <div class="app__map">
+      <el-card class="app__map">
         <Map
           casesType="{casesType}"
           countries="{mapCountries}"
           center="{mapCenter}"
           zoom="{mapZoom}"
         />
-      </div>
+      </el-card>
     </div>
 
-    <div class="app__rightContainer">
+    <el-card class="app__rightContainer">
       <!-- <Card className="app__right">
         <CardContent> -->
-      <h3 className="app__rightTitle">Last 24h Cases by Country</h3>
+      <h3 class="app__rightTitle">Last 24h Cases by Country</h3>
       <!-- {/* Table */} -->
-      <Table countries="{tableData}" />
-      <h3 className="app__graphTitle">Worldwide new casesType</h3>
+      <!-- <Table countries="{tableData}" /> -->
+      <Table country="Chine" totalCase="15000" />
+      <h3 class="app__graphTitle">Worldwide new casesType</h3>
       <LineGraph class="app__graph" casesType="{casesType}" />
       <!-- </CardContent>
       </Card>  -->
-    </div>
+    </el-card>
   </div>
 </template>
 
@@ -130,6 +131,7 @@ code {
 }
 .app__map {
   padding-bottom: 15px;
+  margin: 15px 0;
 }
 .app__rightContainer {
   /* height: 100%; */
