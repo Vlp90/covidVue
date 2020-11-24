@@ -13,8 +13,10 @@
     "element-ui": "^2.14.1",
     "leaflet": "^1.7.1",
     "mapbox-gl": "^1.13.0",
+    "numeral": "^2.0.6",
     "vue": "^2.6.11",
     "vue-chartjs": "^3.5.1",
+    "vue-numerals": "^4.0.4",
     "vue2-google-maps": "^0.10.7",
     "vue2-leaflet": "^2.6.0"
   },

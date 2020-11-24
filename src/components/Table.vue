@@ -11,28 +11,30 @@
 
     <tr v-for="item in fetchValue" :key="item.name">
       <td>{{ item.name }}</td>
-      <td>
-        <strong>{{ item.value }}</strong>
+      <td>        
+
+        <strong>{{ item.value | formatNumber }}</strong>
+
       </td>
     </tr>
 
-    <tr>
-      <td>Chine</td>
-      <td>
-        <strong>120000</strong>
-      </td>
-    </tr>
   </div>
 </template>
 
 <script>
 import { sortData } from "../components/utils";
+import Vue from 'vue'
+var numeral = require("numeral");
+Vue.filter("formatNumber", function (value) {
+    return numeral(value).format("0,0"); // displaying other groupings/separators is possible, look at the docs
+  });
+
 
 export default {
   data() {
     return {
       // name: ["Japon", "Kenya"],
-      // value: [10, 20],
+      count: 10000000002222,
       fetchValue: [],
     };
   },
