@@ -24,7 +24,8 @@
       <h3 class="app__rightTitle">Last 24h Cases by Country</h3>
       <!-- {/* Table */} -->
       <!-- <Table countries="{tableData}" /> -->
-      <Table country="Chine" totalCase="15000" />
+      <!-- <Table country="Chine" totalCase="15000" /> -->
+      <Table />
       <h3 class="app__graphTitle">Worldwide new casesType</h3>
       <LineGraph class="app__graph" casesType="{casesType}" />
        

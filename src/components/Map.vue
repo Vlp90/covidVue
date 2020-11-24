@@ -20,7 +20,7 @@ export default {
       container: "mapContainer",
       style: "mapbox://styles/mapbox/streets-v11",
       center: [103.811279, 1.345399],
-      zoom: 12,
+      zoom: 2,
     //   maxBounds: [
     //     [103.6, 1.1704753],
     //     [104.1, 1.4754753],

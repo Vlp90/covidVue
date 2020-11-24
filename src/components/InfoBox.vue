@@ -1,6 +1,6 @@
 <template>
   <el-card class="infoBox">
-      <h4 class='infoBox__title'>{{ title }}</h4>
+    <h4 class='infoBox__title'>{{ title }}</h4>
     <h1 class='infoBox__cases'>{{evolution}}</h1>
     <h5 class='infoBox__total'>Total : {{total}}</h5>
     <!-- <h4>Coronavirus Case</h4>
