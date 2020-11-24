@@ -1,40 +1,27 @@
 <template>
   <div class="table">
-    <!-- {/*  destructuring the data */}
-      {countries.map(({ country, cases }) => ( -->
-    <!-- <tr>
-          <td>{{country}}</td>
-          <td>
-            <strong>{{totalCase}}</strong>
-          </td>
-        </tr> -->
-
-    <tr v-for="item in fetchValue" :key="item.name">
-      <td>{{ item.name }}</td>
-      <td>        
-
-        <strong>{{ item.value | formatNumber }}</strong>
-
+    <tr v-for="data in fetchValue" :key="data.name">
+      <td>{{ data.name }}</td>
+      <td>
+        <strong>{{ data.value | formatNumber }}</strong>
       </td>
     </tr>
-
   </div>
 </template>
 
 <script>
 import { sortData } from "../components/utils";
-import Vue from 'vue'
+import Vue from "vue";
 var numeral = require("numeral");
-Vue.filter("formatNumber", function (value) {
-    return numeral(value).format("0,0"); // displaying other groupings/separators is possible, look at the docs
-  });
-
+Vue.filter("formatNumber", function(value) {
+  return numeral(value).format("0,0"); // displaying other groupings/separators is possible, look at the docs
+});
 
 export default {
   data() {
     return {
       // name: ["Japon", "Kenya"],
-      count: 10000000002222,
+      // count: 10000000002222,
       fetchValue: [],
     };
   },
@@ -52,10 +39,11 @@ export default {
 
           const sortedData = sortData(data);
           sortedData.map((country) => {
-            // console.log(country.country);
+            // console.log(country.countryInfo.iso2);
             this.fetchValue.push({
               name: country.country,
               value: country.cases,
+              code: country.countryInfo.iso2
             });
           });
 
