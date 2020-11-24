@@ -1,23 +1,32 @@
 <template>
-  <el-card class="infoBox">
+  <el-card  class="infoBox infoBox--selected ">
+      <div @click="test">
     <h4 class='infoBox__title'>{{ title }}</h4>
-    <h1 class='infoBox__cases'>{{evolution}}</h1>
-    <h5 class='infoBox__total'>Total : {{total}}</h5>
+    <h1 class='infoBox__cases' >{{evolution}}</h1>
+    <h5 class='infoBox__total'><strong>Total:</strong> {{total}}</h5>
+      </div>
   </el-card>
 </template>
 
 <script>
+
+
 export default {
   props: ['title', 'evolution', 'total'],
     data(){
         return {
 
         }
+    },
+    methods: {
+        test(e){
+            console.log(e)
+        }
     }
 };
 </script>
 
-<style>
+<style scoped>
 
 .infoBox__title {
     color: #6c757d;
@@ -49,18 +58,18 @@ export default {
   }
 
 
-.infoBox--selected {
+
+/* .infoBox--selected {
     border-top: 10px solid greenyellow;
-}
+} */
 
 .infoBox--red {
-    border-color: red;
+      border-top: 10px solid red;
 }
 
 .infoBox--black {
-    border-color: black;
+   border-top: 10px solid black;
 }
-
 
 .infoBox__cases {
 

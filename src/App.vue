@@ -23,20 +23,20 @@
 
       <div class="app__stats">
         <InfoBox
-          @click="test"
+        class="app__stats--test"
           title="Coronavirus Cases"
           :evolution="evolutionCase"
-          :total="totalCase"
+          :total="totalCase | formatNumber"
         />
-        <InfoBox
+        <InfoBox 
           title="Recovered"
           :evolution="evolutionRecover"
-          :total="totalRecover"
+          :total="totalRecover | formatNumber"
         />
         <InfoBox
           title="Deaths"
           :evolution="evolutionDeath"
-          :total="totalDeath"
+          :total="totalDeath | formatNumber"
         />
       </div>
 
@@ -60,6 +60,17 @@ import LineGraph from "./components/LineGraphs";
 import InfoBox from "./components/InfoBox";
 import Table from "./components/Table";
 import Map from "./components/Map";
+
+import {prettyPrintStat} from './components/utils'
+import Vue from "vue";
+var numeral = require("numeral");
+Vue.filter("formatNumber", function(value) {
+  return numeral(value).format("0,0"); // displaying other groupings/separators is possible, look at the docs
+});
+
+
+
+
 export default {
   name: "App",
   components: {
@@ -164,9 +175,9 @@ export default {
           .then((data) => {
             // console.log("dataFETECHED", data);
 
-            this.evolutionCase = data.todayCases;
-            this.evolutionRecover = data.todayRecovered;
-            this.evolutionDeath = data.todayDeaths;
+            this.evolutionCase = prettyPrintStat(data.todayCases);
+            this.evolutionRecover = prettyPrintStat(data.todayRecovered);
+            this.evolutionDeath = prettyPrintStat(data.todayDeaths);
             this.totalCase = data.cases;
             this.totalRecover = data.recovered;
             this.totalDeath = data.deaths;
@@ -227,6 +238,15 @@ code {
   /* width: 500px; */
   justify-content: space-between;
 }
+/* 
+.app__stats--test:active {
+    border-top: 10px solid greenyellow;
+
+} */
+
+.app__stats--test:evolution {
+  color: red;
+}
 .app__dropdown {
   background-color: white;
 }
@@ -261,6 +281,8 @@ code {
   /* height: 100%; */
   height: 884px;
 }
+
+
 @media (max-width: 500px) {
   .app__stats {
     display: flex;
