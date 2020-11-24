@@ -5,7 +5,7 @@
         <h1>COVID-19 TRACKER</h1>
         <div>
           <el-select
-            @change="handleChange"
+            @change="onCountryChange"
             v-model="countryCodeSelected"
             placeholder="Select"
           >
@@ -23,6 +23,7 @@
 
       <div class="app__stats">
         <InfoBox
+          @click="test"
           title="Coronavirus Cases"
           :evolution="evolutionCase"
           :total="totalCase"
@@ -50,9 +51,6 @@
       <Table />
       <h3 class="app__graphTitle">Worldwide new casesType</h3>
       <LineGraph class="app__graph" casesType="{casesType}" />
-
-      <!-- </CardContent>
-      </Card>  -->
     </el-card>
   </div>
 </template>
@@ -62,7 +60,6 @@ import LineGraph from "./components/LineGraphs";
 import InfoBox from "./components/InfoBox";
 import Table from "./components/Table";
 import Map from "./components/Map";
-// import FormControl from "./components/FormControl";
 export default {
   name: "App",
   components: {
@@ -70,7 +67,6 @@ export default {
     InfoBox,
     Table,
     Map,
-    // FormControl,
   },
   data() {
     return {
@@ -81,37 +77,19 @@ export default {
       evolutionDeath: 23,
       totalDeath: 250,
       countryCodeSelected: "",
-      options: [
-        // {
-        //   value: "Option2010",
-        //   label: "Option210",
-        // },
-        // {
-        //   value: "Option2",
-        //   label: "Option2",
-        // },
-        // {
-        //   value: "Option3",
-        //   label: "Option3",
-        // },
-        // {
-        //   value: "Option4",
-        //   label: "Option4",
-        // },
-        // {
-        //   value: "Option5",
-        //   label: "Option5",
-        // },
-      ],
+      options: [],
       startValue: "Worlwide",
     };
   },
   mounted() {
     this.fetchAllCountries();
-    this.handleChange();
+    this.onCountryChange();
     this.countryCodeSelected = "Worlwide";
   },
   methods: {
+    test() {
+      console.log("action Maggle");
+    },
     fillData() {
       this.dataPoints = {
         labels: [
@@ -155,7 +133,7 @@ export default {
       await fetch("https://disease.sh/v3/covid-19/countries")
         .then((response) => response.json())
         .then((data) => {
-          console.log(data);
+          // console.log(data);
           data.map((country) => {
             // console.log(country.countryInfo.iso2);
             this.options.push({
@@ -169,83 +147,32 @@ export default {
         });
     },
 
-    // async onCountryChange(event) {
-    async onCountryChange() {
-      // console.log("event", event);
-      // const countryCode = event.target.value;
-      // console.log("countryCode", countryCode);
-
-      // const url =
-      //   countryCode === "worldwide-tag-value"
-      //     ? "https://disease.sh/v3/covid-19/all?yesterday=t rue"
-      //     : `https://disease.sh/v3/covid-19/countries/${countryCode}?yesterday=true&strict=true`;
-
-      // https://disease.sh/v3/covid-19/countries/US?yesterday=true&strict=true
-
-      // await fetch(url)
-      await fetch(
-        `https://disease.sh/v3/covid-19/countries/US?yesterday=true&strict=true`
-      )
-        .then((response) => response.json())
-        .then((data) => {
-          console.log(data);
-
-          this.options.push({
-            value: "Option5",
-            label: "Option5",
-          });
-
-          console.log("options", this.options);
-          // setCountry(countryCode);
-          // setCountryInfo(data);
-          // setMapCenter([data.countryInfo.lat, data.countryInfo.long]);
-          // setMapZoom(4);
-        });
-    },
-
-    handleChange(e) {
+    onCountryChange(e) {
       if (e === undefined) {
         // console.log("starter")
         e = "Worldwide";
       }
 
-
-      const url = e === "Worldwide"
-        ? "https://disease.sh/v3/covid-19/all?yesterday=true"
-        : `https://disease.sh/v3/covid-19/countries/${e}?yesterday=true&strict=true`;
-    
+      const url =
+        e === "Worldwide"
+          ? "https://disease.sh/v3/covid-19/all?yesterday=true"
+          : `https://disease.sh/v3/covid-19/countries/${e}?yesterday=true&strict=true`;
 
       const fetchNewUrl = async () => {
         await fetch(url)
           .then((response) => response.json())
           .then((data) => {
-            console.log("dataFETECHED", data);
+            // console.log("dataFETECHED", data);
 
-          this.evolutionCase = data.todayCases;
-           this.evolutionRecover = data.todayRecovered;
+            this.evolutionCase = data.todayCases;
+            this.evolutionRecover = data.todayRecovered;
             this.evolutionDeath = data.todayDeaths;
             this.totalCase = data.cases;
             this.totalRecover = data.recovered;
             this.totalDeath = data.deaths;
-
-            // this.options.push({
-            // value: "Option5",
-            // label: "Option5",
           });
       };
-      fetchNewUrl()
-
-      // const url =
-      //   countryCode === "worldwide-tag-value"
-      //     ? "https://disease.sh/v3/covid-19/all?yesterday=t rue"
-      //     : `https://disease.sh/v3/covid-19/countries/${countryCode}?yesterday=true&strict=true`;
-
-      // https://disease.sh/v3/covid-19/countries/US?yesterday=true&strict=true
-
-      // await fetch(url)
-      // console.log(e)
-      // this.countryCodeSelected = e
-      // console.log("Data passed", this.countryCodeSelected)
+      fetchNewUrl();
     },
   },
 };

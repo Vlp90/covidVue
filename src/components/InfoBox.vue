@@ -3,9 +3,6 @@
     <h4 class='infoBox__title'>{{ title }}</h4>
     <h1 class='infoBox__cases'>{{evolution}}</h1>
     <h5 class='infoBox__total'>Total : {{total}}</h5>
-    <!-- <h4>Coronavirus Case</h4>
-    <h1>+458.2K</h1>
-    <h5>+59,0 Total</h5> -->
   </el-card>
 </template>
 
