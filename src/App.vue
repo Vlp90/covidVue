@@ -23,6 +23,7 @@
 
       <div class="app__stats">
         <InfoBox
+        
           @isSelected="activeRed"
           :classCard="classRed"
           classComp="infoBox__cases--red"
@@ -58,9 +59,13 @@
       <h3 class="app__rightTitle">Last 24h Cases by Country</h3>
 
       <Table />
-      <h3 class="app__graphTitle">Worldwide new casesType</h3>
-    <!-- <LineGraph class="app__graph" :chart-data="datacollection" /> -->
-    <line-chart :data="dataLine"></line-chart>
+      <h3 class="app__graphTitle">Worldwide new casesType (k)</h3>
+      <!-- <LineGraph class="app__graph" :chart-data="datacollection" /> -->
+      <line-chart
+        :data="dataLine"
+        thousands=","
+        :colors="['#808080']"
+      ></line-chart>
     </el-card>
   </div>
 </template>
@@ -75,9 +80,9 @@ import Map from "./components/Map";
 
 //CHART
 
-import Chartkick from 'vue-chartkick'
-import Chart from 'chart.js'
-Vue.use(Chartkick.use(Chart))
+import Chartkick from "vue-chartkick";
+import Chart from "chart.js";
+Vue.use(Chartkick.use(Chart));
 
 import { prettyPrintStat } from "./components/utils";
 import Vue from "vue";
@@ -114,29 +119,31 @@ export default {
       dateGraph: [],
       valueGraph: [],
 
-      dataLine:[],
+      onChangeValue:'',
+
+      dataLine: [],
     };
   },
   mounted() {
     this.fetchAllCountries();
-    this.fillData();
+    // this.fillData();
     this.onCountryChange();
-    this.countryCodeSelected = "Worlwide";   
-    console.log("DataLine", this.dataLine)
+    this.countryCodeSelected = "Worlwide";
+    // console.log("DataLine", this.dataLine)
   },
   methods: {
-    fillData() {
-      this.datacollection = {
-        labels: this.dateGraph,
-        datasets: [
-          {
-            label: "none",
-            backgroundColor: "#f87979",
-            data: this.valueGraph,
-          },
-        ],
-      };
-    },
+    // fillData() {
+    //   this.datacollection = {
+    //     labels: this.dateGraph,
+    //     datasets: [
+    //       {
+    //         label: "none",
+    //         backgroundColor: "#f87979",
+    //         data: this.valueGraph,
+    //       },
+    //     ],
+    //   };
+    // },
 
     activeRed() {
       this.isActiveRed = !this.isActiveRed;
@@ -144,6 +151,7 @@ export default {
       if (this.isActiveRed) {
         this.isActiveBlack = false;
         this.isActiveGreen = false;
+        //  this.onCountryChange.fetchGraphUrl()
       }
 
       // console.log("Green", this.isActiveGreen);
@@ -156,6 +164,7 @@ export default {
       if (this.isActiveGreen) {
         this.isActiveRed = false;
         this.isActiveBlack = false;
+        // this.onCountryChange.fetchGraphUrl()
       }
 
       // console.log("Green", this.isActiveGreen);
@@ -168,13 +177,13 @@ export default {
       if (this.isActiveBlack) {
         this.isActiveRed = false;
         this.isActiveGreen = false;
+        // this.onCountryChange.fetchGraphUrl()
       }
 
       // console.log("Green", this.isActiveGreen);
       // console.log("Red", this.isActiveRed);
       // console.log("Black", this.isActiveBlack);
     },
-    
 
     async fetchAllCountries() {
       await fetch("https://disease.sh/v3/covid-19/countries")
@@ -200,6 +209,10 @@ export default {
         e = "Worldwide";
       }
 
+
+this.onChangeValue = e
+
+console.log(this.onChangeValue)
       const url =
         e === "Worldwide"
           ? "https://disease.sh/v3/covid-19/all?yesterday=true"
@@ -226,42 +239,66 @@ export default {
           ? "https://disease.sh/v3/covid-19/historical/all?lastdays=120"
           : `https://disease.sh/v3/covid-19/historical/${e}?lastdays=120`;
 
-          console.log('EEEEEEE?????????',e)
+      // console.log("EEEEEEE?????????", e);
+
+
+
 
       const fetchGraphUrl = async () => {
         await fetch(url2)
           .then((response) => response.json())
           .then((data) => {
-            console.log("dataFETCHED of the graphhh", data);
-      
-            if (e === "Worldwide") {
+            // console.log("dataFETCHED of the graphhh", data);
+
+
+
+           if (e === "Worldwide" && this.isActiveRed === true) {
+
               for (const [key, value] of Object.entries(data.cases)) {
-
-               const pourcentage = (value / 100000) + 'k'
-
-                console.log(key, value)
-                // this.dataLine.push(["Jan", 4], ["Feb", 2], ["Mar", 10], ["Apr", 5], ["May", 3]     )
-                this.dataLine.push([key, pourcentage] )
+                const pourcentage = value / 100000;
+                this.dataLine.push([key, pourcentage]);
+              }
 
 
+            } else  if (e === "Worldwide" && this.isActiveGreen === true) {
+                for (const [key, value] of Object.entries(data.recovered)) {
+                const pourcentage = value / 100000;
+                this.dataLine.push([key, pourcentage]);
+              }
+               }  else if (e === "Worldwide" && this.isActiveBlack === true) {
+                for (const [key, value] of Object.entries(data.deaths)) {
+                const pourcentage = value / 100000;
+                this.dataLine.push([key, pourcentage]);
+              }
+            }
+            else if (this.isActiveRed === true) {
+              for (const [key, value] of Object.entries(data.timeline.cases)) {
                 // this.dateGraph.push(key);
                 // this.valueGraph.push(value);
+                // console.log(key, value)
+                this.dataLine.push([key, value]);
               }
-              } else {
-
-                for (const [key, value] of Object.entries(data.timeline.cases)) {
-                  // this.dateGraph.push(key);
-                  // this.valueGraph.push(value);
-                  console.log(key, value)
-                  this.dataLine.push([key, value])
-
-                }
+            }
+            else if (this.isActiveGreen === true) {
+              for (const [key, value] of Object.entries(data.timeline.recovered)) {
+                // this.dateGraph.push(key);
+                // this.valueGraph.push(value);
+                // console.log(key, value)
+                this.dataLine.push([key, value]);
               }
-
+            }
+            else if (this.isActiveBlack === true) {
+              for (const [key, value] of Object.entries(data.timeline.deaths)) {
+                // this.dateGraph.push(key);
+                // this.valueGraph.push(value);
+                // console.log(key, value)
+                this.dataLine.push([key, value]);
+              }
+            }
           });
       };
-            // console.log(this.dateGraph)
-            // console.log(this.valueGraph)
+      // console.log(this.dateGraph)
+      // console.log(this.valueGraph)
       fetchGraphUrl();
     },
   },
