@@ -11,7 +11,7 @@
           >
             <el-option key="Ww" value="Worldwide">{{ startValue }}</el-option>
             <el-option
-              v-for="item in options"
+              v-for="item in countryData"
               :key="item.code"
               :label="item.name"
               :value="item.code"
@@ -32,7 +32,7 @@
         />
 
         <InfoBox
-        @isSelected="activeGreen"
+          @isSelected="activeGreen"
           :classCard="classGreen"
           classComp="infoBox__cases--green"
           title="Recovered"
@@ -40,7 +40,7 @@
           :total="totalRecover | formatNumber"
         />
         <InfoBox
-        @isSelected="activeBlack"
+          @isSelected="activeBlack"
           :classCard="classBlack"
           classComp="infoBox__cases--black"
           title="Deaths"
@@ -59,16 +59,25 @@
 
       <Table />
       <h3 class="app__graphTitle">Worldwide new casesType</h3>
-      <LineGraph class="app__graph" casesType="{casesType}" />
+    <!-- <LineGraph class="app__graph" :chart-data="datacollection" /> -->
+    <line-chart :data="dataLine"></line-chart>
     </el-card>
   </div>
 </template>
 
 <script>
-import LineGraph from "./components/LineGraphs";
+// Fetch lineGraph https://disease.sh/v3/covid-19/historical/us?lastdays=120
+
+// import LineGraph from "./components/LineGraphs";
 import InfoBox from "./components/InfoBox";
 import Table from "./components/Table";
 import Map from "./components/Map";
+
+//CHART
+
+import Chartkick from 'vue-chartkick'
+import Chart from 'chart.js'
+Vue.use(Chartkick.use(Chart))
 
 import { prettyPrintStat } from "./components/utils";
 import Vue from "vue";
@@ -80,7 +89,7 @@ Vue.filter("formatNumber", function(value) {
 export default {
   name: "App",
   components: {
-    LineGraph,
+    // LineGraph,
     InfoBox,
     Table,
     Map,
@@ -97,105 +106,84 @@ export default {
       evolutionDeath: 23,
       totalDeath: 250,
       countryCodeSelected: "",
-      options: [],
+      countryData: [],
       startValue: "Worlwide",
+
+      datacollection: null,
+
+      dateGraph: [],
+      valueGraph: [],
+
+      dataLine:[],
     };
   },
   mounted() {
     this.fetchAllCountries();
+    this.fillData();
     this.onCountryChange();
-    this.countryCodeSelected = "Worlwide";
+    this.countryCodeSelected = "Worlwide";   
+    console.log("DataLine", this.dataLine)
   },
   methods: {
-    activeRed() {
-
-
-      this.isActiveRed = !this.isActiveRed;
-
-      if (this.isActiveRed) {
-       this.isActiveBlack = false
-        this.isActiveGreen = false
-      }
-
-      
-      console.log("Green", this.isActiveGreen);
-      console.log("Red", this.isActiveRed);
-      console.log("Black", this.isActiveBlack);
-    },
-    activeGreen() {
-      this.isActiveGreen = !this.isActiveGreen;
- 
-
-      if (this.isActiveGreen) {
-        this.isActiveRed = false
-        this.isActiveBlack = false
-      }
-
-      console.log("Green", this.isActiveGreen);
-      console.log("Red", this.isActiveRed);
-      console.log("Black", this.isActiveBlack);
-    },
-    activeBlack() {
-      
-      this.isActiveBlack = !this.isActiveBlack;
-
-      if (this.isActiveBlack) {
-       this.isActiveRed = false 
-        this.isActiveGreen = false
-      }
-
-      
-      console.log("Green", this.isActiveGreen);
-      console.log("Red", this.isActiveRed);
-      console.log("Black", this.isActiveBlack);
-    },
     fillData() {
-      this.dataPoints = {
-        labels: [
-          "January" + this.getRandomInt(),
-          "February",
-          "March",
-          "April",
-          "May",
-          "June",
-          "July",
-          "August",
-          "September",
-          "October",
-          "November",
-          "December",
-        ],
+      this.datacollection = {
+        labels: this.dateGraph,
         datasets: [
           {
-            label: "Data One",
+            label: "none",
             backgroundColor: "#f87979",
-            data: [
-              this.getRandomInt(),
-              this.getRandomInt(),
-              this.getRandomInt(),
-              this.getRandomInt(),
-              this.getRandomInt(),
-              this.getRandomInt(),
-              this.getRandomInt(),
-              this.getRandomInt(),
-              this.getRandomInt(),
-              this.getRandomInt(),
-              this.getRandomInt(),
-              this.getRandomInt(),
-            ],
+            data: this.valueGraph,
           },
         ],
       };
     },
 
+    activeRed() {
+      this.isActiveRed = !this.isActiveRed;
+
+      if (this.isActiveRed) {
+        this.isActiveBlack = false;
+        this.isActiveGreen = false;
+      }
+
+      // console.log("Green", this.isActiveGreen);
+      // console.log("Red", this.isActiveRed);
+      // console.log("Black", this.isActiveBlack);
+    },
+    activeGreen() {
+      this.isActiveGreen = !this.isActiveGreen;
+
+      if (this.isActiveGreen) {
+        this.isActiveRed = false;
+        this.isActiveBlack = false;
+      }
+
+      // console.log("Green", this.isActiveGreen);
+      // console.log("Red", this.isActiveRed);
+      // console.log("Black", this.isActiveBlack);
+    },
+    activeBlack() {
+      this.isActiveBlack = !this.isActiveBlack;
+
+      if (this.isActiveBlack) {
+        this.isActiveRed = false;
+        this.isActiveGreen = false;
+      }
+
+      // console.log("Green", this.isActiveGreen);
+      // console.log("Red", this.isActiveRed);
+      // console.log("Black", this.isActiveBlack);
+    },
+    
+
     async fetchAllCountries() {
       await fetch("https://disease.sh/v3/covid-19/countries")
         .then((response) => response.json())
         .then((data) => {
-          // console.log(data);
+          // console.log("datafetch", data);
           data.map((country) => {
             // console.log(country.countryInfo.iso2);
-            this.options.push({
+            this.countryData.push({
               name: country.country,
               value: country.cases,
               code: country.countryInfo.iso2,
@@ -232,6 +220,49 @@ export default {
           });
       };
       fetchNewUrl();
+
+      const url2 =
+        e === "Worldwide"
+          ? "https://disease.sh/v3/covid-19/historical/all?lastdays=120"
+          : `https://disease.sh/v3/covid-19/historical/${e}?lastdays=120`;
+
+          console.log('EEEEEEE?????????',e)
+
+      const fetchGraphUrl = async () => {
+        await fetch(url2)
+          .then((response) => response.json())
+          .then((data) => {
+            console.log("dataFETCHED of the graphhh", data);
+      
+            if (e === "Worldwide") {
+              for (const [key, value] of Object.entries(data.cases)) {
+
+               const pourcentage = (value / 100000) + 'k'
+
+                console.log(key, value)
+                // this.dataLine.push(["Jan", 4], ["Feb", 2], ["Mar", 10], ["Apr", 5], ["May", 3]     )
+                this.dataLine.push([key, pourcentage] )
+
+
+                // this.dateGraph.push(key);
+                // this.valueGraph.push(value);
+              }
+              } else {
+
+                for (const [key, value] of Object.entries(data.timeline.cases)) {
+                  // this.dateGraph.push(key);
+                  // this.valueGraph.push(value);
+                  console.log(key, value)
+                  this.dataLine.push([key, value])
+
+                }
+              }
+
+          });
+      };
+            // console.log(this.dateGraph)
+            // console.log(this.valueGraph)
+      fetchGraphUrl();
     },
   },
   computed: {
@@ -242,20 +273,25 @@ export default {
         return "infoBox";
       }
     },
-      classGreen() {
+    classGreen() {
       if (this.isActiveGreen) {
         return "infoBox infoBox--green";
       } else {
         return "infoBox";
       }
     },
-      classBlack() {
+    classBlack() {
       if (this.isActiveBlack) {
         return "infoBox infoBox--black";
       } else {
         return "infoBox";
       }
     },
+  },
+  watch: {
+    // onCountryChange() {
+    //         this.fetchGraphUrl();
+    // }
   },
 };
 </script>
