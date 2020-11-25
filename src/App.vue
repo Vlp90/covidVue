@@ -23,7 +23,6 @@
 
       <div class="app__stats">
         <InfoBox
-        
           @isSelected="activeRed"
           :classCard="classRed"
           classComp="infoBox__cases--red"
@@ -119,7 +118,7 @@ export default {
       dateGraph: [],
       valueGraph: [],
 
-      onChangeValue:'',
+      onChangeValue: "",
 
       dataLine: [],
     };
@@ -152,6 +151,7 @@ export default {
         this.isActiveBlack = false;
         this.isActiveGreen = false;
         //  this.onCountryChange.fetchGraphUrl()
+        this.displayCountryValues();
       }
 
       // console.log("Green", this.isActiveGreen);
@@ -164,6 +164,8 @@ export default {
       if (this.isActiveGreen) {
         this.isActiveRed = false;
         this.isActiveBlack = false;
+        this.displayCountryValues();
+
         // this.onCountryChange.fetchGraphUrl()
       }
 
@@ -177,6 +179,8 @@ export default {
       if (this.isActiveBlack) {
         this.isActiveRed = false;
         this.isActiveGreen = false;
+        this.displayCountryValues();
+
         // this.onCountryChange.fetchGraphUrl()
       }
 
@@ -209,10 +213,9 @@ export default {
         e = "Worldwide";
       }
 
+      this.onChangeValue = e;
 
-this.onChangeValue = e
-
-console.log(this.onChangeValue)
+      // console.log(this.onChangeValue)
       const url =
         e === "Worldwide"
           ? "https://disease.sh/v3/covid-19/all?yesterday=true"
@@ -234,6 +237,12 @@ console.log(this.onChangeValue)
       };
       fetchNewUrl();
 
+      this.displayCountryValues();
+    },
+
+    displayCountryValues(e) {
+      e = this.onChangeValue;
+
       const url2 =
         e === "Worldwide"
           ? "https://disease.sh/v3/covid-19/historical/all?lastdays=120"
@@ -241,58 +250,52 @@ console.log(this.onChangeValue)
 
       // console.log("EEEEEEE?????????", e);
 
-
-
-
       const fetchGraphUrl = async () => {
         await fetch(url2)
           .then((response) => response.json())
           .then((data) => {
             // console.log("dataFETCHED of the graphhh", data);
 
-
-
-           if (e === "Worldwide" && this.isActiveRed === true) {
-
+            if (e === "Worldwide" && this.isActiveRed === true) {
               for (const [key, value] of Object.entries(data.cases)) {
                 const pourcentage = value / 100000;
                 this.dataLine.push([key, pourcentage]);
               }
-
-
-            } else  if (e === "Worldwide" && this.isActiveGreen === true) {
-                for (const [key, value] of Object.entries(data.recovered)) {
+            } else if (e === "Worldwide" && this.isActiveGreen === true) {
+              for (const [key, value] of Object.entries(data.recovered)) {
                 const pourcentage = value / 100000;
                 this.dataLine.push([key, pourcentage]);
               }
-               }  else if (e === "Worldwide" && this.isActiveBlack === true) {
-                for (const [key, value] of Object.entries(data.deaths)) {
+            } else if (e === "Worldwide" && this.isActiveBlack === true) {
+              for (const [key, value] of Object.entries(data.deaths)) {
                 const pourcentage = value / 100000;
                 this.dataLine.push([key, pourcentage]);
               }
-            }
-            else if (this.isActiveRed === true) {
+            } else if (this.isActiveRed === true) {
               for (const [key, value] of Object.entries(data.timeline.cases)) {
                 // this.dateGraph.push(key);
                 // this.valueGraph.push(value);
                 // console.log(key, value)
-                this.dataLine.push([key, value]);
+                const pourcentage = value / 100000;
+                this.dataLine.push([key, pourcentage]);
               }
-            }
-            else if (this.isActiveGreen === true) {
-              for (const [key, value] of Object.entries(data.timeline.recovered)) {
+            } else if (this.isActiveGreen === true) {
+              for (const [key, value] of Object.entries(
+                data.timeline.recovered
+              )) {
                 // this.dateGraph.push(key);
                 // this.valueGraph.push(value);
                 // console.log(key, value)
-                this.dataLine.push([key, value]);
+                const pourcentage = value / 100000;
+                this.dataLine.push([key, pourcentage]);
               }
-            }
-            else if (this.isActiveBlack === true) {
+            } else if (this.isActiveBlack === true) {
               for (const [key, value] of Object.entries(data.timeline.deaths)) {
                 // this.dateGraph.push(key);
                 // this.valueGraph.push(value);
                 // console.log(key, value)
-                this.dataLine.push([key, value]);
+                const pourcentage = value / 10000;
+                this.dataLine.push([key, pourcentage]);
               }
             }
           });
