@@ -1,8 +1,8 @@
 <template>
-  <el-card  class="infoBox infoBox--selected ">
-      <div @click="test">
+  <el-card :class="classCard"  >
+    <div @click="isSelected">
     <h4 class='infoBox__title'>{{ title }}</h4>
-    <h1 class='infoBox__cases' >{{evolution}}</h1>
+    <h1 :class='classComp' >{{evolution}}</h1>
     <h5 class='infoBox__total'><strong>Total:</strong> {{total}}</h5>
       </div>
   </el-card>
@@ -12,21 +12,32 @@
 
 
 export default {
-  props: ['title', 'evolution', 'total'],
+    emits: ['isSelected'],
+    props: ['title', 'evolution', 'total', 'classComp', "classBind", "classCard"],
     data(){
         return {
-
+            isActive: false,
+            border:"10px solid red"
         }
     },
     methods: {
-        test(e){
-            console.log(e)
+        isSelected(){
+            this.$emit('isSelected')
         }
-    }
+    },
+    
 };
 </script>
 
-<style scoped>
+<style>
+
+.red {
+    background-color: blue;
+}
+
+.testClass {
+      border-top: 10px solid red !important;
+}
 
 .infoBox__title {
     color: #6c757d;
@@ -63,20 +74,28 @@ export default {
     border-top: 10px solid greenyellow;
 } */
 
+.infoBox--green {
+      border-top: 10px solid lightgreen !important;
+}
+
+
 .infoBox--red {
-      border-top: 10px solid red;
+      border-top: 10px solid red !important;
 }
 
 .infoBox--black {
-   border-top: 10px solid black;
+   border-top: 10px solid black !important;
 }
 
-.infoBox__cases {
-
+.infoBox__green {
     color: lightgreen !important;
-    font-weight: 700;
+    /* font-weight: 700;
     font-size: 1.75rem;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.5rem; */
+}
+
+.infoBox__cases--green {
+    color: lightgreen !important;
 }
 
 .infoBox__cases--red {

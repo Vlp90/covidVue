@@ -23,17 +23,26 @@
 
       <div class="app__stats">
         <InfoBox
-        class="app__stats--test"
+          @isSelected="activeRed"
+          :classCard="classRed"
+          classComp="infoBox__cases--red"
           title="Coronavirus Cases"
           :evolution="evolutionCase"
           :total="totalCase | formatNumber"
         />
-        <InfoBox 
+
+        <InfoBox
+        @isSelected="activeGreen"
+          :classCard="classGreen"
+          classComp="infoBox__cases--green"
           title="Recovered"
           :evolution="evolutionRecover"
           :total="totalRecover | formatNumber"
         />
         <InfoBox
+        @isSelected="activeBlack"
+          :classCard="classBlack"
+          classComp="infoBox__cases--black"
           title="Deaths"
           :evolution="evolutionDeath"
           :total="totalDeath | formatNumber"
@@ -61,15 +70,12 @@ import InfoBox from "./components/InfoBox";
 import Table from "./components/Table";
 import Map from "./components/Map";
 
-import {prettyPrintStat} from './components/utils'
+import { prettyPrintStat } from "./components/utils";
 import Vue from "vue";
 var numeral = require("numeral");
 Vue.filter("formatNumber", function(value) {
   return numeral(value).format("0,0"); // displaying other groupings/separators is possible, look at the docs
 });
-
-
-
 
 export default {
   name: "App",
@@ -81,6 +87,9 @@ export default {
   },
   data() {
     return {
+      isActiveRed: true,
+      isActiveGreen: false,
+      isActiveBlack: false,
       evolutionCase: 15,
       totalCase: 2500,
       evolutionRecover: 50,
@@ -98,8 +107,47 @@ export default {
     this.countryCodeSelected = "Worlwide";
   },
   methods: {
-    test() {
-      console.log("action Maggle");
+    activeRed() {
+
+
+      this.isActiveRed = !this.isActiveRed;
+
+      if (this.isActiveRed) {
+       this.isActiveBlack = false
+        this.isActiveGreen = false
+      }
+
+      
+      console.log("Green", this.isActiveGreen);
+      console.log("Red", this.isActiveRed);
+      console.log("Black", this.isActiveBlack);
+    },
+    activeGreen() {
+      this.isActiveGreen = !this.isActiveGreen;
+ 
+
+      if (this.isActiveGreen) {
+        this.isActiveRed = false
+        this.isActiveBlack = false
+      }
+
+      console.log("Green", this.isActiveGreen);
+      console.log("Red", this.isActiveRed);
+      console.log("Black", this.isActiveBlack);
+    },
+    activeBlack() {
+      
+      this.isActiveBlack = !this.isActiveBlack;
+
+      if (this.isActiveBlack) {
+       this.isActiveRed = false 
+        this.isActiveGreen = false
+      }
+
+      
+      console.log("Green", this.isActiveGreen);
+      console.log("Red", this.isActiveRed);
+      console.log("Black", this.isActiveBlack);
     },
     fillData() {
       this.dataPoints = {
@@ -184,6 +232,29 @@ export default {
           });
       };
       fetchNewUrl();
+    },
+  },
+  computed: {
+    classRed() {
+      if (this.isActiveRed) {
+        return "infoBox infoBox--red";
+      } else {
+        return "infoBox";
+      }
+    },
+      classGreen() {
+      if (this.isActiveGreen) {
+        return "infoBox infoBox--green";
+      } else {
+        return "infoBox";
+      }
+    },
+      classBlack() {
+      if (this.isActiveBlack) {
+        return "infoBox infoBox--black";
+      } else {
+        return "infoBox";
+      }
     },
   },
 };
@@ -281,7 +352,6 @@ code {
   /* height: 100%; */
   height: 884px;
 }
-
 
 @media (max-width: 500px) {
   .app__stats {
