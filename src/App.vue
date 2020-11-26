@@ -3,6 +3,10 @@
     <div class="app__left">
       <div class="app__header">
         <h1>COVID-19 TRACKER</h1>
+        <!-- <div
+            class="info-flag"
+            :style="images"
+          ></div> -->
         <div>
           <el-select
             @change="onCountryChange"
@@ -147,17 +151,30 @@ export default {
 
       accessToken: API_Key,
       markers: [],
-      centerMap:[2, 46],
+      centerMap: [2, 46],
+      popups: [],
+
+      message: `
+                    <div class="info-container">
+  
+            
+          <h2>Welcome on the Covid Tracker</h2>
+         
+        </div>
+              `,
+      
+      urlImage:'',
+      images:{}
+      // images:{ backgroundImage: "url(https://disease.sh/assets/img/flags/al.png)" }
     };
   },
   mounted() {
     this.fetchAllCountries();
-    // this.fillData();
+
     this.onCountryChange();
     this.countryCodeSelected = "Worlwide";
-    // console.log("DataLine", this.dataLine)
-    // console.log(this.countryData)
-    
+    // console.log(this.images)
+ 
   },
   methods: {
     mapBoxSetting() {
@@ -175,17 +192,49 @@ export default {
         //   ],
       });
 
+      //MARKERS
 
-//MARKERS
-
-      this.countryData.forEach(element => {
+      this.countryData.forEach((element) => {
         this.markers.push([
-          new mapboxgl.Marker().setLngLat([element.long, element.lat]).addTo(map)
+          new mapboxgl.Marker()
+            .setLngLat([element.long, element.lat])
+            .addTo(map),
         ]);
       });
 
-   
-     
+      // POPUPS
+
+      var markerHeight = 50,
+        markerRadius = 10,
+        linearOffset = 25;
+      var popupOffsets = {
+        top: [0, 0],
+        "top-left": [0, 0],
+        "top-right": [0, 0],
+        bottom: [0, -markerHeight],
+        "bottom-left": [
+          linearOffset,
+          (markerHeight - markerRadius + linearOffset) * -1,
+        ],
+        "bottom-right": [
+          -linearOffset,
+          (markerHeight - markerRadius + linearOffset) * -1,
+        ],
+        left: [markerRadius, (markerHeight - markerRadius) * -1],
+        right: [-markerRadius, (markerHeight - markerRadius) * -1],
+      };
+
+      
+
+      this.popups = new mapboxgl.Popup({
+        offset: popupOffsets,
+        className: "my-class",
+      })
+        .setLngLat(this.centerMap)
+        .setHTML(this.message)
+        // .setHTML("<h1>Hello World! {{ nameCountry }}</h1>")
+        .setMaxWidth("300px")
+        .addTo(map);
     },
 
 
@@ -195,12 +244,10 @@ export default {
       if (this.isActiveRed) {
         this.isActiveBlack = false;
         this.isActiveGreen = false;
-     
+
         this.casesType = "cases";
         this.displayCountryValues();
-        
       }
-    
     },
     activeGreen() {
       this.isActiveGreen = !this.isActiveGreen;
@@ -210,11 +257,7 @@ export default {
         this.isActiveBlack = false;
         this.casesType = "recovered";
         this.displayCountryValues();
-
-      
       }
-
-  
     },
     activeBlack() {
       this.isActiveBlack = !this.isActiveBlack;
@@ -224,11 +267,7 @@ export default {
         this.isActiveGreen = false;
         this.casesType = "deaths";
         this.displayCountryValues();
-
-       
       }
-
-     
     },
 
     async fetchAllCountries() {
@@ -250,7 +289,8 @@ export default {
 
           // console.log("Sorted", sortedData);
         });
-        this.mapBoxSetting();
+         
+      this.mapBoxSetting();
     },
 
     onCountryChange(e) {
@@ -268,7 +308,9 @@ export default {
         await fetch(url)
           .then((response) => response.json())
           .then((data) => {
-            console.log("dataFETECHED", data);
+            // console.log("dataFETECHED", data);
+
+            // console.log(data.countryInfo.flag)
 
             this.evolutionCase = prettyPrintStat(data.todayCases);
             this.evolutionRecover = prettyPrintStat(data.todayRecovered);
@@ -277,18 +319,59 @@ export default {
             this.totalRecover = data.recovered;
             this.totalDeath = data.deaths;
 
-    this.centerMap = [data.countryInfo.long, data.countryInfo.lat]
-  
+          // this.urlImage = data.countryInfo.flag
 
+            // if (this.urlImage === undefined) {
+            //   console.log("Image introuvable")
+            // }
 
-            if (data.country === null) {
+            // console.log(this.images)
+            // this.image = `backgroundImage:"url(${this.urlImage})"`
+
+          //  class="info-flag"
+          //   style=${this.images}
+          // ></div>
+
+        
+
+          // console.log('NameCountry',this.nameCountry)
+
+          // console.log(this.images)
+            if (data.country === undefined || data.country === null) {
               this.nameCountry = "Worlwide";
             } else {
               this.nameCountry = data.country;
+            this.images ={ backgroundImage: `url(${this.urlImage})`}
+              // this.message = 'countryname ' + this.totalCase + this.nameCountry
+              this.message = `
+                  
+
+         <div class="info-container">
+            <div
+            
+          <div class="info-name">${this.nameCountry}</div>
+          <div class="info-confirmed">
+            Cases: ${this.totalCase}
+          </div>
+          <div class="info-recovered">
+            Recovered: ${this.totalRecover}
+          </div>
+          <div class="info-deaths">
+            Deaths: ${this.totalDeath}
+          </div>
+        </div>
+              `
+
             }
 
-      this.mapBoxSetting();
+    
+// :style="{'background-image':'url(https://vuejs.org/images/logo.png)'}"
 
+
+
+            this.centerMap = [data.countryInfo.long, data.countryInfo.lat];
+            this.mapBoxSetting();
+              
           });
       };
       fetchNewUrl();
@@ -384,7 +467,7 @@ export default {
     },
   
   },
-  };
+};
 </script>
 
 <style>
@@ -392,6 +475,34 @@ export default {
   width: 100%;
   height: 615px;
 }
+
+
+
+
+.info-container {
+    width: 150px;
+}
+
+.info-name {
+    font-size: 20px;
+    font-weight: bold;
+    color: #555;
+}
+
+.info-flag {
+    height: 80px;
+    width: 100%;
+    background-size: cover;
+    border-radius: 8px;
+}
+
+.info-confirmed,
+.info-recovered,
+.info-deaths {
+    font-size: 16px;
+    margin-top: 5px;
+}
+
 
 * {
   margin: 0;
@@ -476,14 +587,16 @@ code {
   margin-bottom: 20px;
 }
 .app__map {
-  padding-bottom: 15px;
+  /* padding-bottom: 15px; */
   margin: 15px 0;
   /* width: 100%; */
 }
 .app__rightContainer {
   /* height: 100%; */
-  height: 884px;
+     height: 883px  !important;
 }
+
+
 
 @media (max-width: 500px) {
   .app__stats {
