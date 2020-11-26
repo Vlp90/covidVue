@@ -147,6 +147,7 @@ export default {
 
       accessToken: API_Key,
       markers: [],
+      centerMap:[2, 46],
     };
   },
   mounted() {
@@ -165,7 +166,7 @@ export default {
       const map = new mapboxgl.Map({
         container: "mapContainer",
         style: "mapbox://styles/mapbox/light-v10",
-        center: [2, 46],
+        center: this.centerMap,
 
         zoom: 2,
         //   maxBounds: [
@@ -174,20 +175,17 @@ export default {
         //   ],
       });
 
-     console.log(this.countryData)
+
+//MARKERS
+
       this.countryData.forEach(element => {
-        // console.log(element.lat)
         this.markers.push([
           new mapboxgl.Marker().setLngLat([element.long, element.lat]).addTo(map)
         ]);
       });
 
-      // this.markers.push([
-      //   new mapboxgl.Marker().setLngLat([2, 46]).addTo(map),
-      //   new mapboxgl.Marker().setLngLat([5, 46]).addTo(map),
-      //   new mapboxgl.Marker().setLngLat([5, 10]).addTo(map),
-      // ]);
-      
+   
+     
     },
 
 
@@ -197,21 +195,12 @@ export default {
       if (this.isActiveRed) {
         this.isActiveBlack = false;
         this.isActiveGreen = false;
-        //  this.onCountryChange.fetchGraphUrl()
+     
         this.casesType = "cases";
         this.displayCountryValues();
+        
       }
-      // console.log("countryData", this.countryData);
-
-      // this.countryData.forEach(element => {
-      //   console.log(element.lat)
-      // });
-
-      // console.log("countryData", this.countryData.code);
-      
-      // console.log("Green", this.isActiveGreen);
-      // console.log("Red", this.isActiveRed);
-      // console.log("Black", this.isActiveBlack);
+    
     },
     activeGreen() {
       this.isActiveGreen = !this.isActiveGreen;
@@ -222,12 +211,10 @@ export default {
         this.casesType = "recovered";
         this.displayCountryValues();
 
-        // this.onCountryChange.fetchGraphUrl()
+      
       }
 
-      // console.log("Green", this.isActiveGreen);
-      // console.log("Red", this.isActiveRed);
-      // console.log("Black", this.isActiveBlack);
+  
     },
     activeBlack() {
       this.isActiveBlack = !this.isActiveBlack;
@@ -238,12 +225,10 @@ export default {
         this.casesType = "deaths";
         this.displayCountryValues();
 
-        // this.onCountryChange.fetchGraphUrl()
+       
       }
 
-      // console.log("Green", this.isActiveGreen);
-      // console.log("Red", this.isActiveRed);
-      // console.log("Black", this.isActiveBlack);
+     
     },
 
     async fetchAllCountries() {
@@ -270,13 +255,10 @@ export default {
 
     onCountryChange(e) {
       if (e === undefined) {
-        // console.log("starter")
         e = "Worldwide";
       }
 
       this.onChangeValue = e;
-
-      // console.log(this.onChangeValue)
       const url =
         e === "Worldwide"
           ? "https://disease.sh/v3/covid-19/all?yesterday=true"
@@ -286,7 +268,7 @@ export default {
         await fetch(url)
           .then((response) => response.json())
           .then((data) => {
-            // console.log("dataFETECHED", data);
+            console.log("dataFETECHED", data);
 
             this.evolutionCase = prettyPrintStat(data.todayCases);
             this.evolutionRecover = prettyPrintStat(data.todayRecovered);
@@ -295,15 +277,21 @@ export default {
             this.totalRecover = data.recovered;
             this.totalDeath = data.deaths;
 
-            if (data.country === undefined) {
+    this.centerMap = [data.countryInfo.long, data.countryInfo.lat]
+  
+
+
+            if (data.country === null) {
               this.nameCountry = "Worlwide";
             } else {
               this.nameCountry = data.country;
             }
+
+      this.mapBoxSetting();
+
           });
       };
       fetchNewUrl();
-
       this.displayCountryValues();
     },
 
@@ -394,13 +382,9 @@ export default {
         return "infoBox";
       }
     },
+  
   },
-  watch: {
-    // onCountryChange() {
-    //         this.fetchGraphUrl();
-    // }
-  },
-};
+  };
 </script>
 
 <style>
