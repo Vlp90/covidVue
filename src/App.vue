@@ -2,7 +2,7 @@
   <div class="app">
     <div class="app__left">
       <div class="app__header">
-        <h1 >COVID-19 TRACKER</h1>
+        <h1>COVID-19 TRACKER</h1>
         <div>
           <el-select
             @change="onCountryChange"
@@ -50,7 +50,9 @@
       </div>
 
       <el-card class="app__map">
-        <Map />
+        <!-- <Map :v-model="markers"/> -->
+        <!-- <vueMapbox></vueMapbox> -->
+        <div id="mapContainer" class="basemap"></div>
       </el-card>
     </div>
 
@@ -58,18 +60,27 @@
       <h3 class="app__rightTitle">Last 24h Cases by Country</h3>
 
       <Table />
-      <h3 class="app__graphTitle">{{nameCountry}} new {{casesType}} (k)</h3>
+      <h3 class="app__graphTitle">{{ nameCountry }} new {{ casesType }} (k)</h3>
       <!-- <LineGraph class="app__graph" :chart-data="datacollection" /> -->
       <area-chart
-      :dataset="{borderWidth: 0.1}"
-      :curve="false"
-      suffix="k"
-      :round="2" :zeros="true"
+        :dataset="{ borderWidth: 0.1 }"
+        :curve="false"
+        suffix="k"
+        :round="2"
+        :zeros="true"
         :data="dataLine"
         thousands=","
         :colors="['#808080']"
       ></area-chart>
     </el-card>
+
+    <!-- <div class="table">
+    <tr v-for="data in countryData" :key="data.code">
+      <td>{{ data.name }}</td>
+      <td>Latitude : {{ data.lat }}</td>
+      <td>Longitude: {{ data.long }}</td>
+    </tr>
+  </div> -->
   </div>
 </template>
 
@@ -79,13 +90,19 @@
 // import LineGraph from "./components/LineGraphs";
 import InfoBox from "./components/InfoBox";
 import Table from "./components/Table";
-import Map from "./components/Map";
+// import Map from "./components/Map";
+// import vueMapbox from "./components/vueMapBox"
 
 //CHART
 
 import Chartkick from "vue-chartkick";
 import Chart from "chart.js";
 Vue.use(Chartkick.use(Chart));
+
+//MAP
+
+import mapboxgl from "mapbox-gl";
+import { API_Key } from "../src/key";
 
 import { prettyPrintStat } from "./components/utils";
 import Vue from "vue";
@@ -95,12 +112,13 @@ Vue.filter("formatNumber", function(value) {
 });
 
 export default {
-  name: "App",
+  name: "BaseMap",
   components: {
     // LineGraph,
     InfoBox,
     Table,
-    Map,
+    // Map,
+    // vueMapbox
   },
   data() {
     return {
@@ -116,8 +134,8 @@ export default {
       countryCodeSelected: "",
       countryData: [],
       startValue: "Worlwide",
-      nameCountry:'',
-      casesType:'cases',
+      nameCountry: "",
+      casesType: "cases",
       datacollection: null,
 
       dateGraph: [],
@@ -126,6 +144,9 @@ export default {
       onChangeValue: "",
 
       dataLine: [],
+
+      accessToken: API_Key,
+      markers: [],
     };
   },
   mounted() {
@@ -134,21 +155,41 @@ export default {
     this.onCountryChange();
     this.countryCodeSelected = "Worlwide";
     // console.log("DataLine", this.dataLine)
-
+    // console.log(this.countryData)
+    
   },
   methods: {
-    // fillData() {
-      //   this.datacollection = {
-        //     labels: this.dateGraph,
-    //     datasets: [
-      //       {
-        //         label: "none",
-    //         backgroundColor: "#f87979",
-    //         data: this.valueGraph,
-    //       },
-    //     ],
-    //   };
-    // },
+    mapBoxSetting() {
+      //MAP SETTINGS
+      mapboxgl.accessToken = this.accessToken;
+      const map = new mapboxgl.Map({
+        container: "mapContainer",
+        style: "mapbox://styles/mapbox/light-v10",
+        center: [2, 46],
+
+        zoom: 2,
+        //   maxBounds: [
+        //     [103.6, 1.1704753],
+        //     [104.1, 1.4754753],
+        //   ],
+      });
+
+     console.log(this.countryData)
+      this.countryData.forEach(element => {
+        // console.log(element.lat)
+        this.markers.push([
+          new mapboxgl.Marker().setLngLat([element.long, element.lat]).addTo(map)
+        ]);
+      });
+
+      // this.markers.push([
+      //   new mapboxgl.Marker().setLngLat([2, 46]).addTo(map),
+      //   new mapboxgl.Marker().setLngLat([5, 46]).addTo(map),
+      //   new mapboxgl.Marker().setLngLat([5, 10]).addTo(map),
+      // ]);
+      
+    },
+
 
     activeRed() {
       this.isActiveRed = !this.isActiveRed;
@@ -157,10 +198,17 @@ export default {
         this.isActiveBlack = false;
         this.isActiveGreen = false;
         //  this.onCountryChange.fetchGraphUrl()
-        this.casesType = 'cases'
+        this.casesType = "cases";
         this.displayCountryValues();
       }
+      // console.log("countryData", this.countryData);
 
+      // this.countryData.forEach(element => {
+      //   console.log(element.lat)
+      // });
+
+      // console.log("countryData", this.countryData.code);
+      
       // console.log("Green", this.isActiveGreen);
       // console.log("Red", this.isActiveRed);
       // console.log("Black", this.isActiveBlack);
@@ -171,7 +219,7 @@ export default {
       if (this.isActiveGreen) {
         this.isActiveRed = false;
         this.isActiveBlack = false;
-        this.casesType = 'recovered'
+        this.casesType = "recovered";
         this.displayCountryValues();
 
         // this.onCountryChange.fetchGraphUrl()
@@ -187,7 +235,7 @@ export default {
       if (this.isActiveBlack) {
         this.isActiveRed = false;
         this.isActiveGreen = false;
-        this.casesType = 'deaths'
+        this.casesType = "deaths";
         this.displayCountryValues();
 
         // this.onCountryChange.fetchGraphUrl()
@@ -204,19 +252,20 @@ export default {
         .then((data) => {
           // console.log("datafetch", data);
           data.map((country) => {
-            // console.log(country.countryInfo.iso2);
+            // console.log("Latitude", country.countryInfo.lat);
+            // console.log("Longitude", country.countryInfo.long);
             this.countryData.push({
               name: country.country,
               value: country.cases,
               code: country.countryInfo.iso2,
+              lat: country.countryInfo.lat,
+              long: country.countryInfo.long,
             });
-
-                        
-
           });
 
           // console.log("Sorted", sortedData);
         });
+        this.mapBoxSetting();
     },
 
     onCountryChange(e) {
@@ -247,10 +296,9 @@ export default {
             this.totalDeath = data.deaths;
 
             if (data.country === undefined) {
-              this.nameCountry = 'Worlwide'
+              this.nameCountry = "Worlwide";
             } else {
-
-              this.nameCountry = data.country
+              this.nameCountry = data.country;
             }
           });
       };
@@ -356,6 +404,11 @@ export default {
 </script>
 
 <style>
+.basemap {
+  width: 100%;
+  height: 615px;
+}
+
 * {
   margin: 0;
   padding: 0;
