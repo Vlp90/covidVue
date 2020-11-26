@@ -60,11 +60,15 @@
       <Table />
       <h3 class="app__graphTitle">{{nameCountry}} new {{casesType}} (k)</h3>
       <!-- <LineGraph class="app__graph" :chart-data="datacollection" /> -->
-      <line-chart
+      <area-chart
+      :dataset="{borderWidth: 0.1}"
+      :curve="false"
+      suffix="k"
+      :round="2" :zeros="true"
         :data="dataLine"
         thousands=","
         :colors="['#808080']"
-      ></line-chart>
+      ></area-chart>
     </el-card>
   </div>
 </template>
@@ -233,7 +237,7 @@ export default {
         await fetch(url)
           .then((response) => response.json())
           .then((data) => {
-            console.log("dataFETECHED", data);
+            // console.log("dataFETECHED", data);
 
             this.evolutionCase = prettyPrintStat(data.todayCases);
             this.evolutionRecover = prettyPrintStat(data.todayRecovered);
@@ -273,17 +277,17 @@ export default {
 
             if (e === "Worldwide" && this.isActiveRed === true) {
               for (const [key, value] of Object.entries(data.cases)) {
-                const pourcentage = value / 100000;
+                const pourcentage = value / 1000;
                 this.dataLine.push([key, pourcentage]);
               }
             } else if (e === "Worldwide" && this.isActiveGreen === true) {
               for (const [key, value] of Object.entries(data.recovered)) {
-                const pourcentage = value / 100000;
+                const pourcentage = value / 1000;
                 this.dataLine.push([key, pourcentage]);
               }
             } else if (e === "Worldwide" && this.isActiveBlack === true) {
               for (const [key, value] of Object.entries(data.deaths)) {
-                const pourcentage = value / 100000;
+                const pourcentage = value / 1000;
                 this.dataLine.push([key, pourcentage]);
               }
             } else if (this.isActiveRed === true) {
@@ -291,7 +295,7 @@ export default {
                 // this.dateGraph.push(key);
                 // this.valueGraph.push(value);
                 // console.log(key, value)
-                const pourcentage = value / 100000;
+                const pourcentage = value / 1000;
                 this.dataLine.push([key, pourcentage]);
               }
             } else if (this.isActiveGreen === true) {
@@ -301,7 +305,7 @@ export default {
                 // this.dateGraph.push(key);
                 // this.valueGraph.push(value);
                 // console.log(key, value)
-                const pourcentage = value / 100000;
+                const pourcentage = value / 1000;
                 this.dataLine.push([key, pourcentage]);
               }
             } else if (this.isActiveBlack === true) {
@@ -309,7 +313,7 @@ export default {
                 // this.dateGraph.push(key);
                 // this.valueGraph.push(value);
                 // console.log(key, value)
-                const pourcentage = value / 10000;
+                const pourcentage = value / 1000;
                 this.dataLine.push([key, pourcentage]);
               }
             }
