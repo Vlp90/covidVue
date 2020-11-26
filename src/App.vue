@@ -2,7 +2,7 @@
   <div class="app">
     <div class="app__left">
       <div class="app__header">
-        <h1>COVID-19 TRACKER</h1>
+        <h1 >COVID-19 TRACKER</h1>
         <div>
           <el-select
             @change="onCountryChange"
@@ -58,7 +58,7 @@
       <h3 class="app__rightTitle">Last 24h Cases by Country</h3>
 
       <Table />
-      <h3 class="app__graphTitle">Worldwide new casesType (k)</h3>
+      <h3 class="app__graphTitle">{{nameCountry}} new {{casesType}} (k)</h3>
       <!-- <LineGraph class="app__graph" :chart-data="datacollection" /> -->
       <line-chart
         :data="dataLine"
@@ -112,7 +112,8 @@ export default {
       countryCodeSelected: "",
       countryData: [],
       startValue: "Worlwide",
-
+      nameCountry:'',
+      casesType:'cases',
       datacollection: null,
 
       dateGraph: [],
@@ -129,14 +130,15 @@ export default {
     this.onCountryChange();
     this.countryCodeSelected = "Worlwide";
     // console.log("DataLine", this.dataLine)
+
   },
   methods: {
     // fillData() {
-    //   this.datacollection = {
-    //     labels: this.dateGraph,
+      //   this.datacollection = {
+        //     labels: this.dateGraph,
     //     datasets: [
-    //       {
-    //         label: "none",
+      //       {
+        //         label: "none",
     //         backgroundColor: "#f87979",
     //         data: this.valueGraph,
     //       },
@@ -151,6 +153,7 @@ export default {
         this.isActiveBlack = false;
         this.isActiveGreen = false;
         //  this.onCountryChange.fetchGraphUrl()
+        this.casesType = 'cases'
         this.displayCountryValues();
       }
 
@@ -164,6 +167,7 @@ export default {
       if (this.isActiveGreen) {
         this.isActiveRed = false;
         this.isActiveBlack = false;
+        this.casesType = 'recovered'
         this.displayCountryValues();
 
         // this.onCountryChange.fetchGraphUrl()
@@ -179,6 +183,7 @@ export default {
       if (this.isActiveBlack) {
         this.isActiveRed = false;
         this.isActiveGreen = false;
+        this.casesType = 'deaths'
         this.displayCountryValues();
 
         // this.onCountryChange.fetchGraphUrl()
@@ -201,6 +206,9 @@ export default {
               value: country.cases,
               code: country.countryInfo.iso2,
             });
+
+                        
+
           });
 
           // console.log("Sorted", sortedData);
@@ -225,7 +233,7 @@ export default {
         await fetch(url)
           .then((response) => response.json())
           .then((data) => {
-            // console.log("dataFETECHED", data);
+            console.log("dataFETECHED", data);
 
             this.evolutionCase = prettyPrintStat(data.todayCases);
             this.evolutionRecover = prettyPrintStat(data.todayRecovered);
@@ -233,6 +241,13 @@ export default {
             this.totalCase = data.cases;
             this.totalRecover = data.recovered;
             this.totalDeath = data.deaths;
+
+            if (data.country === undefined) {
+              this.nameCountry = 'Worlwide'
+            } else {
+
+              this.nameCountry = data.country
+            }
           });
       };
       fetchNewUrl();
