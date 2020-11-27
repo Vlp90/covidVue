@@ -64,7 +64,7 @@
       <h3 class="app__rightTitle">Last 24h Cases by Country</h3>
 
       <Table />
-      <h3 class="app__graphTitle">{{ nameCountry }} new {{ casesType }} (k)</h3>
+      <h3 class="app__graphTitle">{{ nameCountry }} new {{ casesType }}</h3>
       <!-- <LineGraph class="app__graph" :chart-data="datacollection" /> -->
       <area-chart
         :dataset="{ borderWidth: 0.1 }"
@@ -74,7 +74,7 @@
         :zeros="true"
         :data="dataLine"
         thousands=","
-        :colors="['#808080']"
+        :colors="colorLine"
       ></area-chart>
     </el-card>
 
@@ -144,6 +144,7 @@ export default {
 
       dateGraph: [],
       valueGraph: [],
+      colorLine: ["#ff0000"],
 
       onChangeValue: "",
 
@@ -156,16 +157,15 @@ export default {
 
       message: `
                     <div class="info-container">
-  
-            
           <h2>Welcome on the Covid Tracker</h2>
-         
-        </div>
+                 </div>
               `,
-      
-      urlImage:'',
-      images:{}
-      // images:{ backgroundImage: "url(https://disease.sh/assets/img/flags/al.png)" }
+
+      urlImage: "",
+      // images: {},
+      images: {
+        backgroundImage: "url(https://disease.sh/assets/img/flags/al.png)",
+      },
     };
   },
   mounted() {
@@ -174,7 +174,6 @@ export default {
     this.onCountryChange();
     this.countryCodeSelected = "Worlwide";
     // console.log(this.images)
- 
   },
   methods: {
     mapBoxSetting() {
@@ -196,12 +195,20 @@ export default {
 
       this.countryData.forEach((element) => {
         this.markers.push([
-          new mapboxgl.Marker()
+          new mapboxgl.Marker({
+            options: {
+              color: {
+                type: String,
+                default: "#ff0000",
+                         },
+            },
+          })
             .setLngLat([element.long, element.lat])
             .addTo(map),
         ]);
       });
 
+      console.log("mapboxgl.Marker", mapboxgl.Marker);
       // POPUPS
 
       var markerHeight = 50,
@@ -224,8 +231,6 @@ export default {
         right: [-markerRadius, (markerHeight - markerRadius) * -1],
       };
 
-      
-
       this.popups = new mapboxgl.Popup({
         offset: popupOffsets,
         className: "my-class",
@@ -237,7 +242,6 @@ export default {
         .addTo(map);
     },
 
-
     activeRed() {
       this.isActiveRed = !this.isActiveRed;
 
@@ -247,6 +251,7 @@ export default {
 
         this.casesType = "cases";
         this.displayCountryValues();
+        this.colorLine = ["#ff0000"];
       }
     },
     activeGreen() {
@@ -257,6 +262,7 @@ export default {
         this.isActiveBlack = false;
         this.casesType = "recovered";
         this.displayCountryValues();
+        this.colorLine = ["#90ee90"];
       }
     },
     activeBlack() {
@@ -267,6 +273,7 @@ export default {
         this.isActiveGreen = false;
         this.casesType = "deaths";
         this.displayCountryValues();
+        this.colorLine = ["#303133"];
       }
     },
 
@@ -289,7 +296,7 @@ export default {
 
           // console.log("Sorted", sortedData);
         });
-         
+
       this.mapBoxSetting();
     },
 
@@ -319,7 +326,7 @@ export default {
             this.totalRecover = data.recovered;
             this.totalDeath = data.deaths;
 
-          // this.urlImage = data.countryInfo.flag
+            // this.urlImage = data.countryInfo.flag
 
             // if (this.urlImage === undefined) {
             //   console.log("Image introuvable")
@@ -328,27 +335,22 @@ export default {
             // console.log(this.images)
             // this.image = `backgroundImage:"url(${this.urlImage})"`
 
-          //  class="info-flag"
-          //   style=${this.images}
-          // ></div>
+            //  <div  class="info-flag"  style={ backgroundImage: url(${data.countryInfo.flag}) }>
+            //         hello
+            //         </div>
 
-        
+            // console.log('NameCountry',this.nameCountry)
 
-          // console.log('NameCountry',this.nameCountry)
-
-          // console.log(this.images)
+            // console.log(this.images)
             if (data.country === undefined || data.country === null) {
               this.nameCountry = "Worlwide";
             } else {
               this.nameCountry = data.country;
-            this.images ={ backgroundImage: `url(${this.urlImage})`}
+              this.images = { backgroundImage: `url(${this.urlImage})` };
               // this.message = 'countryname ' + this.totalCase + this.nameCountry
               this.message = `
-                  
-
-         <div class="info-container">
-            <div
-            
+               <div class="info-container">
+                   
           <div class="info-name">${this.nameCountry}</div>
           <div class="info-confirmed">
             Cases: ${this.totalCase}
@@ -360,18 +362,13 @@ export default {
             Deaths: ${this.totalDeath}
           </div>
         </div>
-              `
-
+           `;
             }
 
-    
-// :style="{'background-image':'url(https://vuejs.org/images/logo.png)'}"
-
-
+            // :style="{'background-image':'url(https://vuejs.org/images/logo.png)'}"
 
             this.centerMap = [data.countryInfo.long, data.countryInfo.lat];
             this.mapBoxSetting();
-              
           });
       };
       fetchNewUrl();
@@ -465,7 +462,6 @@ export default {
         return "infoBox";
       }
     },
-  
   },
 };
 </script>
@@ -476,33 +472,29 @@ export default {
   height: 615px;
 }
 
-
-
-
 .info-container {
-    width: 150px;
+  width: 150px;
 }
 
 .info-name {
-    font-size: 20px;
-    font-weight: bold;
-    color: #555;
+  font-size: 20px;
+  font-weight: bold;
+  color: #555;
 }
 
 .info-flag {
-    height: 80px;
-    width: 100%;
-    background-size: cover;
-    border-radius: 8px;
+  height: 80px;
+  width: 100%;
+  background-size: cover;
+  border-radius: 8px;
 }
 
 .info-confirmed,
 .info-recovered,
 .info-deaths {
-    font-size: 16px;
-    margin-top: 5px;
+  font-size: 16px;
+  margin-top: 5px;
 }
-
 
 * {
   margin: 0;
@@ -593,10 +585,8 @@ code {
 }
 .app__rightContainer {
   /* height: 100%; */
-     height: 883px  !important;
+  height: 883px !important;
 }
-
-
 
 @media (max-width: 500px) {
   .app__stats {
